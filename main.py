@@ -82,9 +82,11 @@ async def process_pdf_files():
 
         await message.answer("PDF fayl qabul qilindi. JPG formatiga o'tkazilmoqda...")
 
+        time.sleep(1)  # Simulate a long-running task
         # Generate a unique filename for the downloaded file
         timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         file_path = f"temp_{timestamp}.pdf"
+        time.sleep(1)
 
         # Download the file
         file = await bot.download_file_by_id(message.document.file_id, destination=file_path)
@@ -103,9 +105,11 @@ async def process_pdf_files():
             img_file_path = f'out_{timestamp}_{i}.jpg'
             img.save(img_file_path, 'JPEG', quality=100)
 
+            time.sleep(1)  # Simulate a long-running task
             # Send the image file
             with open(img_file_path, 'rb') as img_file:
                 await bot.send_document(message.chat.id, img_file)
+                time.sleep(1)
 
             # Remove the image file after sending
             if os.path.exists(img_file_path):
