@@ -8,7 +8,7 @@ import os
 import time
 import datetime
 
-API_TOKEN = '6658276318:AAHK3osN5sZgJpAOsVaIQiIiTGeNwBpkDYI'
+API_TOKEN = '6658276318:AAFAvb0lg5w0UdXZJV_4C_pghK2adlWP5EU'
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -72,7 +72,7 @@ async def process_continue(callback_query: types.CallbackQuery):
 @dp.callback_query_handler(lambda c: c.data == 'stop')
 async def process_stop(callback_query: types.CallbackQuery):
     await bot.answer_callback_query(callback_query.id)
-    await bot.send_message(callback_query.from_user.id, "Jarayon to'xtatildi.")
+    await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
 
 
 async def process_pdf_files():
