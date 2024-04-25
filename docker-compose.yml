@@ -6,5 +6,3 @@ services:
       - .:/app
     environment:
       - API_TOKEN=6658276318:AAHK3osN5sZgJpAOsVaIQiIiTGeNwBpkDYI
-    ports:
-      - "80:80"
