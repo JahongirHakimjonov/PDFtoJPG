@@ -7,14 +7,20 @@ from PIL import Image
 import os
 import time
 import datetime
+from dotenv import load_dotenv, find_dotenv
 
-API_TOKEN = '6658276318:AAFAvb0lg5w0UdXZJV_4C_pghK2adlWP5EU'
+load_dotenv(find_dotenv())
+
+
+bot_token = os.getenv("BOT_TOKEN")
+if not bot_token:
+    raise ValueError("Missing BOT_TOKEN environment variable")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
 # Initialize bot and dispatcher
-bot = Bot(token=API_TOKEN)
+bot = Bot(token=bot_token)
 dp = Dispatcher(bot)
 
 # Define the inline keyboard
@@ -39,7 +45,9 @@ pdf_queue = asyncio.Queue()
 
 @dp.message_handler(commands=['start'])
 async def start_command(message: types.Message):
-    await message.answer("Quyidagi amallarni tanlang:", reply_markup=keyboard)
+    await message.answer(
+        f"Salom [{message.from_user.first_name}](tg://user?id={message.from_user.id})\nQuyidagi amallarni tanlang:",
+        reply_markup=keyboard, parse_mode='Markdown')
 
 
 @dp.callback_query_handler(lambda c: c.data == 'csv_to_xlsx')
