@@ -80,6 +80,7 @@ async def process_continue(callback_query: types.CallbackQuery):
 async def process_stop(callback_query: types.CallbackQuery):
     await bot.answer_callback_query(callback_query.id)
     await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
+    await bot.send_message(callback_query.from_user.id, "Xizmatlarimizdan foydalanganingiz uchun rahmat!")
 
 
 async def process_pdf_files():
