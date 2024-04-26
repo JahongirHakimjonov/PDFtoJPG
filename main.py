@@ -1,13 +1,13 @@
-import logging
-import fitz
-import asyncio
-from aiogram import Bot, Dispatcher, types
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from PIL import Image
 import os
+import fitz
 import time
+import logging
+import asyncio
 import datetime
+from PIL import Image
+from aiogram import Bot, Dispatcher, types
 from dotenv import load_dotenv, find_dotenv
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 load_dotenv(find_dotenv())
 
@@ -42,23 +42,27 @@ continue_stop_keyboard.add(*continue_stop_buttons)
 pdf_queue = asyncio.Queue()
 
 
-@dp.message_handler(commands=['start'])
+@dp.message_handler(commands=["start"])
 async def start_command(message: types.Message):
     await message.answer(
         f"Salom [{message.from_user.first_name}](tg://user?id={message.from_user.id})\nQuyidagi amallarni tanlang:",
-        reply_markup=keyboard, parse_mode='Markdown')
+        reply_markup=keyboard,
+        parse_mode="Markdown",
+    )
 
 
-@dp.callback_query_handler(lambda c: c.data == 'csv_to_xlsx')
+@dp.callback_query_handler(lambda c: c.data == "csv_to_xlsx")
 async def process_csv_to_xlsx(callback_query: types.CallbackQuery):
     # Handle the 'CSV to XLSX' button press here
     pass
 
 
-@dp.callback_query_handler(lambda c: c.data == 'pdf_to_jpg')
+@dp.callback_query_handler(lambda c: c.data == "pdf_to_jpg")
 async def process_pdf_to_jpg(callback_query: types.CallbackQuery):
     await bot.answer_callback_query(callback_query.id)
-    await bot.send_message(callback_query.from_user.id, "JPG qilish uchun PDF faylni yuboring.")
+    await bot.send_message(
+        callback_query.from_user.id, "JPG qilish uchun PDF faylni yuboring."
+    )
 
     @dp.message_handler(content_types=types.ContentType.DOCUMENT)
     async def pdf_to_jpg(message: types.Message):
@@ -70,17 +74,23 @@ async def process_pdf_to_jpg(callback_query: types.CallbackQuery):
             asyncio.create_task(process_pdf_files())
 
 
-@dp.callback_query_handler(lambda c: c.data == 'continue')
+@dp.callback_query_handler(lambda c: c.data == "continue")
 async def process_continue(callback_query: types.CallbackQuery):
     await bot.answer_callback_query(callback_query.id)
-    await bot.send_message(callback_query.from_user.id, "Keyingi amalni tanlang:", reply_markup=keyboard)
+    await bot.send_message(
+        callback_query.from_user.id, "Keyingi amalni tanlang:", reply_markup=keyboard
+    )
 
 
-@dp.callback_query_handler(lambda c: c.data == 'stop')
+@dp.callback_query_handler(lambda c: c.data == "stop")
 async def process_stop(callback_query: types.CallbackQuery):
     await bot.answer_callback_query(callback_query.id)
-    await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
-    await bot.send_message(callback_query.from_user.id, "Xizmatlarimizdan foydalanganingiz uchun rahmat!")
+    await bot.delete_message(
+        callback_query.from_user.id, callback_query.message.message_id
+    )
+    await bot.send_message(
+        callback_query.from_user.id, "Xizmatlarimizdan foydalanganingiz uchun rahmat!"
+    )
 
 
 async def process_pdf_files():
@@ -97,7 +107,9 @@ async def process_pdf_files():
         time.sleep(1)
 
         # Download the file
-        file = await bot.download_file_by_id(message.document.file_id, destination=file_path)
+        file = await bot.download_file_by_id(
+            message.document.file_id, destination=file_path
+        )
         file.close()  # Close the file after downloading
 
         # Open the PDF file
@@ -110,12 +122,12 @@ async def process_pdf_files():
 
             # Convert the pixmap to a PIL Image and save it
             img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-            img_file_path = f'out_{timestamp}_{i}.jpg'
-            img.save(img_file_path, 'JPEG', quality=100)
+            img_file_path = f"out_{timestamp}_{i}.jpg"
+            img.save(img_file_path, "JPEG", quality=100)
 
             time.sleep(1)  # Simulate a long-running task
             # Send the image file
-            with open(img_file_path, 'rb') as img_file:
+            with open(img_file_path, "rb") as img_file:
                 await bot.send_document(message.chat.id, img_file)
                 time.sleep(1)
 
@@ -132,10 +144,14 @@ async def process_pdf_files():
 
         # Mark the task as done
         pdf_queue.task_done()
-        await bot.send_message(message.chat.id, "Jarayon yakunlandi : )", reply_markup=continue_stop_keyboard)
+        await bot.send_message(
+            message.chat.id,
+            "Jarayon yakunlandi : )",
+            reply_markup=continue_stop_keyboard,
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from aiogram import executor
 
     executor.start_polling(dp, skip_updates=True)
